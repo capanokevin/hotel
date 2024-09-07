@@ -3,10 +3,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 import openai
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
-from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 
 # Imposta l'API Key di OpenAI
@@ -49,29 +47,29 @@ def send_order_via_email(order_text, room_number):
         print(f"Errore nell'invio dell'email: {e}")
         return False
 
-# Funzione per interrogare GPT usando il modello GPT-4o-mini
+# Funzione per interrogare GPT-4 direttamente con OpenAI e Langchain
 def chat_with_gpt(user_message):
-    # Definire il modello ChatOpenAI (GPT-4o-mini o altro modello)
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0, api_key=openai.api_key)
+    # Template del prompt
+    template = """
+    Sei un assistente virtuale per un hotel. Il cliente ha scritto: {user_message}.
+    Rispondi cortesemente e prendi l'ordine per la cucina.
+    """
     
-    # Definire il prompt di sistema che dà istruzioni generali all'AI
-    system_message = SystemMessagePromptTemplate.from_template(
-        "Sei un assistente virtuale per un hotel. Il tuo compito è rispondere cortesemente alle richieste dei clienti e prendere ordini per la cucina."
-    )
+    # Crea il PromptTemplate
+    prompt_template = PromptTemplate(input_variables=["user_message"], template=template)
     
-    # Definire il prompt dell'utente che contiene il messaggio inviato dal cliente
-    user_message_prompt = HumanMessagePromptTemplate.from_template("{user_message}")
-    
-    # Creare il ChatPromptTemplate
-    chat_prompt = ChatPromptTemplate.from_messages([system_message, user_message_prompt])
-    
-    # Creare la catena LLM utilizzando il prompt e il modello
-    llm_chain = LLMChain(prompt=chat_prompt, llm=llm)
+    # Creare la catena LLM
+    llm_chain = LLMChain(prompt=prompt_template, llm=openai.Completion.create)
     
     # Eseguire la catena passando il messaggio dell'utente
-    result = llm_chain.run({"user_message": user_message})
+    result = openai.Completion.create(
+        model="gpt-3.5-turbo",
+        prompt=prompt_template.format(user_message=user_message),
+        temperature=0.7,
+        max_tokens=150
+    )
     
-    return result
+    return result.choices[0].text.strip()
 
 # Simula l'input del QR code (in un'implementazione reale, questo sarebbe ottenuto dal QR code)
 def get_camera_from_qr_code():
