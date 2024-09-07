@@ -9,7 +9,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import HumanMessagePromptTemplate
 
 # Imposta l'API Key di OpenAI
-openai.api_key = 'your_openai_api_key'
+openai.api_key = = st.secrets["OPENAI_API_KEY"]
 
 # Dati simulati per mappare i QR code alle camere
 camera_qr_mapping = {
@@ -21,9 +21,9 @@ camera_qr_mapping = {
 
 # Funzione per inviare email
 def send_order_via_email(order_text, room_number):
-    sender_email = "hotel_email@example.com"
-    receiver_email = "kitchen_email@example.com"
-    password = "your_email_password"
+    sender_email = "kevin.capano99@gmail.com"
+    receiver_email = "matteoomagri@gmail.com"
+    password = "Pallmallone1!"
 
     # Crea l'oggetto email
     msg = MIMEMultipart()
