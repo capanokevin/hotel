@@ -9,7 +9,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts.chat import HumanMessagePromptTemplate
 
 # Imposta l'API Key di OpenAI
-openai.api_key = = st.secrets["OPENAI_API_KEY"]
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Dati simulati per mappare i QR code alle camere
 camera_qr_mapping = {
