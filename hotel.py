@@ -5,7 +5,6 @@ import smtplib
 import openai
 from langchain import LLMChain
 from langchain.prompts import PromptTemplate
-from langchain.chat_models import ChatOpenAI
 
 
 # Imposta l'API Key di OpenAI
