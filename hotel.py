@@ -4,9 +4,9 @@ from email.mime.multipart import MIMEMultipart
 import smtplib
 import openai
 from langchain import LLMChain
-from langchain.prompts import ChatPromptTemplate, PromptTemplate
+from langchain.prompts import PromptTemplate
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts.chat import HumanMessagePromptTemplate
+
 
 # Imposta l'API Key di OpenAI
 openai.api_key = st.secrets["OPENAI_API_KEY"]
