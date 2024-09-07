@@ -3,7 +3,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import smtplib
 import openai
-from langchain import LLMChain
+from langchain.chat_models import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
+from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
 
 
@@ -49,17 +51,25 @@ def send_order_via_email(order_text, room_number):
 
 # Funzione per interrogare GPT usando il modello GPT-4o-mini
 def chat_with_gpt(user_message):
+    # Definire il modello ChatOpenAI (GPT-4o-mini o altro modello)
     llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.0, api_key=openai.api_key)
-    template = '''
-    Sei un assistente virtuale per un hotel. Il cliente ha scritto: {eventuale_testo_aggiuntivo}
-    Rispondi cortesemente e prendi l'ordine per la cucina.
-    '''
     
-    user_prompt = PromptTemplate(template=template, input_variables=["eventuale_testo_aggiuntivo"])
-    chat_prompt = ChatPromptTemplate.from_messages([HumanMessagePromptTemplate(prompt=user_prompt)])
+    # Definire il prompt di sistema che dà istruzioni generali all'AI
+    system_message = SystemMessagePromptTemplate.from_template(
+        "Sei un assistente virtuale per un hotel. Il tuo compito è rispondere cortesemente alle richieste dei clienti e prendere ordini per la cucina."
+    )
     
-    llm_chain = LLMChain(prompt=chat_prompt, llm=llm, verbose=False)
-    result = llm_chain.run({"eventuale_testo_aggiuntivo": user_message})
+    # Definire il prompt dell'utente che contiene il messaggio inviato dal cliente
+    user_message_prompt = HumanMessagePromptTemplate.from_template("{user_message}")
+    
+    # Creare il ChatPromptTemplate
+    chat_prompt = ChatPromptTemplate.from_messages([system_message, user_message_prompt])
+    
+    # Creare la catena LLM utilizzando il prompt e il modello
+    llm_chain = LLMChain(prompt=chat_prompt, llm=llm)
+    
+    # Eseguire la catena passando il messaggio dell'utente
+    result = llm_chain.run({"user_message": user_message})
     
     return result
 
