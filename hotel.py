@@ -1,112 +1,73 @@
 import streamlit as st
-import openai
+from PIL import Image
 
-# Imposta l'API Key di OpenAI
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Titolo principale dell'app
+st.title('Hotel Digital Concierge')
+st.write("Benvenuto nell'app dell'hotel! Seleziona uno dei servizi per continuare.")
 
+# Creiamo la sidebar di navigazione
+page = st.sidebar.selectbox("Seleziona un servizio", ["Home", "Servizio in Camera", "Hotel Services", "Virtual Assistant"])
 
-# Funzione per interrogare GPT con il menu
-def chat_with_gpt(user_message):
-    response = openai.Completion.create(
-        model="gpt-3.5-turbo",
-        prompt=f"Il cliente ha scritto: {user_message}\nRispondi cortesemente e prendi l'ordine per la cucina.",
-        temperature=0.7,
-        max_tokens=150
-    )
-    return response.choices[0].text.strip()
-
-# Funzione per mostrare il menu automatico all'inizio
-def show_menu():
-    return """
-    Benvenuto nel servizio in camera! Ecco il nostro menu:
-    - **Spaghetti al Pomodoro** - €12
-    - **Risotto ai Funghi** - €14
-    - **Pizza Margherita** - €10
-    - **Insalata Greca** - €8
-    - **Tagliata di Manzo** - €18
-    - **Dessert: Tiramisù** - €6
-    - **Bevande: Acqua, Vino Rosso, Vino Bianco**
-    Scrivi qui il tuo ordine quando sei pronto!
-    """
-
-# Configurazione della pagina
-st.set_page_config(page_title="Hotel Assistant", layout="centered")
-
-# Pagina principale con tre opzioni
-if 'page' not in st.session_state:
-    st.session_state['page'] = 'home'
-
-if st.session_state['page'] == 'home':
-    st.title("Benvenuto nel nostro Hotel")
-    st.write("Seleziona un'opzione per continuare:")
+# Home Page
+if page == "Home":
+    st.header("Benvenuto!")
+    st.write("Scegli tra i seguenti servizi per migliorare la tua esperienza presso il nostro hotel.")
     
-    # Stile CSS per i box
-    st.markdown("""
-    <style>
-    .option-box {
-        display: inline-block;
-        width: 100%;
-        margin: 10px 0;
-        padding: 20px;
-        text-align: center;
-        font-size: 24px;
-        font-weight: bold;
-        color: white;
-        border-radius: 10px;
-        cursor: pointer;
-    }
-    .room-service { background-color: #ff6347; }
-    .hotel-services { background-color: #00bfff; }
-    .concierge { background-color: #32cd32; }
-    .option-box:hover { opacity: 0.8; }
-    </style>
-    """, unsafe_allow_html=True)
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("Servizio in Camera"):
+            st.write("Clicca sulla barra laterale per accedere al servizio in camera.")
 
-    # Box per Room Service
-    st.markdown('<div class="option-box room-service" onclick="window.location.href = \'#\'">Room Service</div>', unsafe_allow_html=True)
-    # Box per Servizi dell'Hotel (non funzionante nella demo)
-    st.markdown('<div class="option-box hotel-services">Servizi dell\'Hotel</div>', unsafe_allow_html=True)
-    # Box per Concierge (non funzionante nella demo)
-    st.markdown('<div class="option-box concierge">Concierge</div>', unsafe_allow_html=True)
+    with col2:
+        if st.button("Hotel Services"):
+            st.write("Clicca sulla barra laterale per esplorare i servizi dell'hotel.")
 
-    # Interazione con il box cliccato
-    if st.button("Room Service"):
-        st.session_state['page'] = 'room_service'
+    with col3:
+        if st.button("Virtual Assistant"):
+            st.write("Clicca sulla barra laterale per parlare con l'assistente virtuale.")
 
-# Pagina Room Service (chat)
-if st.session_state['page'] == 'room_service':
-    st.title("Room Service Chat")
+# Pagina Servizio in Camera
+elif page == "Servizio in Camera":
+    st.header("Servizio in Camera")
+    st.write("Chat non funzionante, solo per scopi dimostrativi.")
+    
+    # Aggiunta di una chat demo
+    st.text_area("Chat", "Buonasera! Come posso assisterti con il servizio in camera oggi?", height=200)
 
-    # Inizializzazione della cronologia della chat
-    if 'chat_history' not in st.session_state:
-        st.session_state['chat_history'] = []
-        # Il chatbot invia automaticamente il menu al primo accesso
-        st.session_state['chat_history'].append({
-            'assistant_message': show_menu()
-        })
+# Pagina Hotel Services
+elif page == "Hotel Services":
+    st.header("Hotel Services")
+    st.write("Scopri i servizi offerti dall'hotel.")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Prenota il Ristorante")
+        st.write("Clicca qui per prenotare un tavolo nel nostro ristorante.")
+        st.button("Prenota ora")
 
-    # Funzione per visualizzare la cronologia della chat in stile WhatsApp/Telegram
-    def display_chat():
-        for chat in st.session_state['chat_history']:
-            if 'user_message' in chat:
-                st.markdown(f"<div style='background-color:#dcf8c6;padding:10px;border-radius:10px;margin:5px 0;text-align:right;color:black;'>**Tu:** {chat['user_message']}</div>", unsafe_allow_html=True)
-            if 'assistant_message' in chat:
-                st.markdown(f"<div style='background-color:#ececec;padding:10px;border-radius:10px;margin:5px 0;text-align:left;color:black;'>**Assistente:** {chat['assistant_message']}</div>", unsafe_allow_html=True)
+        st.subheader("Prenota la Spa")
+        st.write("Rilassati nella nostra spa di lusso.")
+        st.button("Prenota ora")
+    
+    with col2:
+        st.subheader("Prenota il Servizio Taxi")
+        st.write("Richiedi un taxi per esplorare la città.")
+        st.button("Richiedi Taxi")
 
-    # Mostra la cronologia della chat
-    display_chat()
+        st.subheader("Lavanderia")
+        st.write("Prenota il servizio lavanderia direttamente dalla tua stanza.")
+        st.button("Richiedi Servizio")
 
-    # Input utente per la chat
-    user_input = st.text_input("Scrivi qui il tuo messaggio", key="chat_input")
+# Pagina Virtual Assistant
+elif page == "Virtual Assistant":
+    st.header("Virtual Assistant")
+    st.write("Chatta con il nostro assistente virtuale per avere informazioni sull'hotel, sulla città e altro.")
 
-    if st.button("Invia"):
-        if user_input:
-            # Invia il messaggio dell'utente e ottieni la risposta dall'assistente
-            assistant_message = chat_with_gpt(user_input)
-            # Aggiungi i messaggi alla cronologia
-            st.session_state['chat_history'].append({
-                'user_message': user_input,
-                'assistant_message': assistant_message
-            })
-            # Aggiorna la pagina per mostrare i nuovi messaggi
-            st.experimental_rerun()
+    # Chat demo per assistente virtuale
+    query = st.text_input("Come posso aiutarti?")
+    
+    if query:
+        st.write(f"Risposta automatica: Sto cercando informazioni riguardo '{query}'.")
+
